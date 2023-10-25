@@ -21,7 +21,7 @@ public class EmailService {
     @Async
     public void sendEmail(String userEmail) {
         String subject = "Account Verification";
-        String message = "Please click the following link to verify your account: http://localhost:8081/api/user/isEnable/userID/" + userEmail;
+        String message = "Please click the following link to verify your account: http://localhost:8082/api/user/isEnable/userID/" + userEmail;
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(userEmail);
         mailMessage.setSubject(subject);
