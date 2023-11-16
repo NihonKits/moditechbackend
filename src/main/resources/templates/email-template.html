@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Template</title>
+</head>
+<body>
+<h1>Top Sold Products</h1>
+<ul th:each="product : ${products}">
+    <li>
+        <img th:src="${product.productImage}" alt="Product Image"/>
+        <p th:text="${product.productName}"></p>
+        <p th:text="${product.description}"></p>
+    </li>
+</ul>
+</body>
+</html>

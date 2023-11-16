@@ -3,8 +3,10 @@ package com.moditech.ecommerce.service;
 import com.moditech.ecommerce.dto.OrderCountDto;
 import com.moditech.ecommerce.dto.OrderDto;
 import com.moditech.ecommerce.dto.ProductQuantityDto;
+import com.moditech.ecommerce.dto.ProductVariationsDto;
 import com.moditech.ecommerce.model.Order;
 import com.moditech.ecommerce.model.Product;
+import com.moditech.ecommerce.model.ProductVariations;
 import com.moditech.ecommerce.repository.OrderRepository;
 import com.moditech.ecommerce.repository.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -58,14 +60,30 @@ public class OrderService {
     }
 
     private void subtractProductsFromInventory(List<ProductQuantityDto> productQuantities) {
+        System.out.println(productQuantities);
         for (ProductQuantityDto pq : productQuantities) {
             Optional<Product> productOptional = productRepository.findById(pq.getProductId());
             if (productOptional.isPresent()) {
                 Product product = productOptional.get();
-                product.setQuantity(product.getQuantity() - pq.getQuantity());
+
+                pq.getVariationIndexes().forEach(variationIndex -> {
+                    if (variationIndex >= 0 && variationIndex < product.getProductVariationsList().size()) {
+                        ProductVariations variation = product.getProductVariationsList().get(variationIndex);
+                        int newQuantity = variation.getQuantity() - pq.getQuantity();
+                        if (newQuantity < 0) {
+                            // Handle negative quantity if needed
+                            log.error("Negative quantity for product variation: {}", variation.getVariationName());
+                        } else {
+                            variation.setQuantity(newQuantity);
+                        }
+                    } else {
+                        log.error("Invalid variation index: {}", variationIndex);
+                    }
+                });
+
                 productRepository.save(product);
             } else {
-                log.error("error in subtractProductsFromInventory");
+                log.error("Product not found: {}", pq.getProductId());
             }
         }
     }
@@ -75,10 +93,19 @@ public class OrderService {
             Optional<Product> productOptional = productRepository.findById(pq.getProductId());
             if (productOptional.isPresent()) {
                 Product product = productOptional.get();
-//                product.setSold(product.getSold() + pq.getQuantity());
+
+                pq.getVariationIndexes().forEach(variationIndex -> {
+                    if (variationIndex >= 0 && variationIndex < product.getProductVariationsList().size()) {
+                        ProductVariations variation = product.getProductVariationsList().get(variationIndex);
+                        variation.setSold(variation.getSold() + pq.getQuantity());
+                    } else {
+                        log.error("Invalid variation index: {}", variationIndex);
+                    }
+                });
+
                 productRepository.save(product);
             } else {
-                log.error("error in updateProductSold");
+                log.error("Product not found: {}", pq.getProductId());
             }
         }
     }

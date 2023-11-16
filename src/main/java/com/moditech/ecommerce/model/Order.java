@@ -30,6 +30,10 @@ public class Order {
 
     private String receipt;
 
+    private String address;
+
+    private String contactNumber;
+
     @CreatedDate
     private LocalDateTime orderDate;
 }

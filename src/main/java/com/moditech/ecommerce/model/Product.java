@@ -2,8 +2,13 @@ package com.moditech.ecommerce.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,19 +18,20 @@ public class Product {
     @Id
     private String id;
 
+    private String barcode;
+
     private String productName;
 
     private String productImage;
 
     private String description;
 
-    private Double price;
+    private String isAd = "false";
 
-    private Integer quantity;
+    private List<ProductVariations> productVariationsList;
 
-    private String category;
-//
-//    private Integer sold = 0;
-//
-//    private String reason;
+    @CreatedDate
+    @Field("created_at")
+    private LocalDateTime createdAt;
+
 }
