@@ -1,8 +1,10 @@
 package com.moditech.ecommerce.service;
 
 import com.moditech.ecommerce.dto.ProductDto;
+import com.moditech.ecommerce.dto.ProductVariationsDto;
 import com.moditech.ecommerce.dto.TopSoldProductDto;
 import com.moditech.ecommerce.model.Product;
+import com.moditech.ecommerce.model.ProductVariations;
 import com.moditech.ecommerce.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -90,7 +92,6 @@ public class ProductService {
     }
 
 
-
     public Product getProductById(String id) {
         return productRepository.findById(id).orElse(null);
     }
@@ -143,10 +144,66 @@ public class ProductService {
     }
 
 
-    private long monthlyTimestamp = 30;
-
     public List<Product> getProductsWithinLastMonth() {
-        LocalDateTime oneMonthAgo = LocalDateTime.now().minus(monthlyTimestamp, ChronoUnit.DAYS);
+        long monthlyTimestamp = 30;
+        LocalDateTime oneMonthAgo = LocalDateTime.now().minusDays(monthlyTimestamp);
         return productRepository.findByCreatedAtAfter(oneMonthAgo);
     }
+
+    public void removeProductVariation(String productId, String variationName) {
+        Product product = productRepository.findById(productId).orElse(null);
+
+        if (product != null) {
+            List<ProductVariations> variationsList = product.getProductVariationsList();
+
+            variationsList.removeIf(variation -> variation.getVariationName().equals(variationName.trim()));
+
+            productRepository.save(product);
+        } else {
+            System.out.println("Product not found with ID: " + productId);
+        }
+    }
+
+    public void updateProductVariation(String productId, String oldVariationName, ProductVariationsDto updatedVariation) {
+        Product product = productRepository.findById(productId).orElse(null);
+
+        if (product != null) {
+            List<ProductVariations> variationsList = product.getProductVariationsList();
+
+            for (ProductVariations variation : variationsList) {
+                if (variation.getVariationName().equals(oldVariationName.trim())) {
+                    // Update the fields of the existing variation with the values from the updatedVariation
+                    variation.setVariationName(updatedVariation.getVariationName()); // Update the name
+                    variation.setImgUrl(updatedVariation.getImgUrl());
+                    variation.setDescription(updatedVariation.getDescription());
+                    variation.setPrice(updatedVariation.getPrice());
+                    variation.setQuantity(updatedVariation.getQuantity());
+                    // Add more fields to update as needed
+                    productRepository.save(product);
+                    return;
+                }
+            }
+        } else {
+            System.out.println("Product not found with ID: " + productId);
+        }
+    }
+
+    public ProductVariations getProductVariationByName(String productId, String variationName) {
+        Product product = productRepository.findById(productId).orElse(null);
+
+        if (product != null) {
+            List<ProductVariations> variationsList = product.getProductVariationsList();
+
+            for (ProductVariations variation : variationsList) {
+                if (variation.getVariationName().equals(variationName.trim())) {
+                    return variation;
+                }
+            }
+        } else {
+            System.out.println("Product not found with ID: " + productId);
+        }
+
+        return null;
+    }
+
 }
