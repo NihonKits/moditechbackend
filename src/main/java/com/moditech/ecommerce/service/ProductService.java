@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -40,8 +41,27 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<TopSoldProductDto> getAllProducts() {
+        // Create a custom query to sum the sold quantities for each product
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.unwind("productVariationsList"), // Unwind the variations array
+                Aggregation.group("_id")
+                        .first("id").as("id")
+                        .first("barcode").as("barcode")
+                        .first("productName").as("productName")
+                        .first("productImage").as("productImage")
+                        .first("description").as("description")
+                        .first("isAd").as("isAd")
+                        .addToSet("productVariationsList").as("productVariationsList")
+                        .sum("productVariationsList.sold").as("totalSold"), // Sum the sold quantities
+                Aggregation.match(where("totalSold").gt(0)), // Exclude documents with totalSold of 0
+                Aggregation.sort(Sort.Direction.DESC, "totalSold") // Sort by total sold in descending order
+        );
+
+        // Execute the aggregation query
+        AggregationResults<TopSoldProductDto> results = mongoTemplate.aggregate(aggregation, "product", TopSoldProductDto.class);
+        // Get the result list
+        return results.getMappedResults();
     }
 
     public List<TopSoldProductDto> getTopSoldProducts() {
@@ -137,10 +157,27 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public List<Product> getProductsByIsAd() {
-        String isAd = "true";
+    public List<TopSoldProductDto> getProductsByIsAd() {
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("isAd").is(true)), // Match documents with isAd=true
+                Aggregation.unwind("productVariationsList"), // Unwind the variations array
+                Aggregation.group("_id")
+                        .first("id").as("id")
+                        .first("barcode").as("barcode")
+                        .first("productName").as("productName")
+                        .first("productImage").as("productImage")
+                        .first("description").as("description")
+                        .first("isAd").as("isAd")
+                        .addToSet("productVariationsList").as("productVariationsList")
+                        .sum("productVariationsList.sold").as("totalSold"), // Sum the sold quantities
+                Aggregation.match(where("totalSold").is(0))
+        );
 
-        return productRepository.findByIsAd(isAd);
+// Execute the aggregation query
+        AggregationResults<TopSoldProductDto> results = mongoTemplate.aggregate(aggregation, "product", TopSoldProductDto.class);
+
+        return results.getMappedResults();
+
     }
 
 

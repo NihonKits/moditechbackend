@@ -28,7 +28,7 @@ public class ProductController {
     }
 
     @GetMapping("/list")
-    private List<Product> getAllProducts() {
+    private List<TopSoldProductDto> getAllProducts() {
         return productService.getAllProducts();
     }
 
@@ -67,8 +67,8 @@ public class ProductController {
     }
 
     @GetMapping("/isAd")
-    private ResponseEntity<List<Product>> getProductsByIsAd() {
-        List<Product> product = productService.getProductsByIsAd();
+    private ResponseEntity<List<TopSoldProductDto>> getProductsByIsAd() {
+        List<TopSoldProductDto> product = productService.getProductsByIsAd();
         return ResponseEntity.ok(product);
     }
 
