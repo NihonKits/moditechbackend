@@ -28,11 +28,14 @@ public class EmailService {
     @Value("${spring.mail.username}")
     String adminEmail;
 
+    @Value("${frontend.base.url}")
+    String frontEndBaseUrl;
 
     @Async
     public void sendEmail(String userEmail) {
         String subject = "Account Verification";
-        String message = "Please click the following link to verify your account: http://localhost:8082/api/user/isEnable/userID/" + userEmail;
+        String message = "Please click the following link to verify your account:" + frontEndBaseUrl
+                + "/api/user/isEnable/userID/" + userEmail;
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(userEmail);
         mailMessage.setSubject(subject);
@@ -42,7 +45,8 @@ public class EmailService {
     }
 
     @Async
-    public void sendCombinedEmail(List<String> userEmails, List<TopSoldProductDto> topSoldProducts, List<Product> productsWithinLastMonth) {
+    public void sendCombinedEmail(List<String> userEmails, List<TopSoldProductDto> topSoldProducts,
+            List<Product> productsWithinLastMonth) {
         String subject = "Combined Products";
         String htmlContent = generateCombinedProductsHtml(topSoldProducts, productsWithinLastMonth);
 
@@ -63,7 +67,8 @@ public class EmailService {
         }
     }
 
-    private String generateCombinedProductsHtml(List<TopSoldProductDto> topSoldProducts, List<Product> productsWithinLastMonth) {
+    private String generateCombinedProductsHtml(List<TopSoldProductDto> topSoldProducts,
+            List<Product> productsWithinLastMonth) {
         Context context = new Context();
         context.setVariable("topSoldProducts", topSoldProducts);
         context.setVariable("productsWithinLastMonth", productsWithinLastMonth);
