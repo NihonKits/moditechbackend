@@ -10,14 +10,13 @@ import org.springframework.web.client.RestTemplate;
 @EnableScheduling
 public class ScheduledTask {
 
-    private final String BASE_URL = "http://localhost:8082/api/email/sendCombinedEmail";
-
     @Autowired
-    private RestTemplate restTemplate;
+    RestTemplate restTemplate;
 
     @Scheduled(cron = "0 0 0 1 * *")
 //    @Scheduled(cron = "0 0/5 * * *")
     public void sendCombinedEmail() {
+        String BASE_URL = "http://localhost:8082/api/email/sendCombinedEmail";
         restTemplate.postForEntity(BASE_URL, null, String.class);
     }
 }
