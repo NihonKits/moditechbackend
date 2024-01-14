@@ -1,4 +1,8 @@
-FROM openjdk:11
-ARG JAR_FILE=target/*.jar
-COPY ./target/ecommerce-0.0.1-SNAPSHOT.jar app.jar
+FROM openjdk:11-jre-slim-buster
+VOLUME /tmp
+COPY target/*.jar app.jar
 ENTRYPOINT [ "java", "-jar", "/app.jar" ]
+EXPOSE 8080
+# RUN mvn clean package -DskipTests
+# ARG JAR_FILE=target/*.jar
+
