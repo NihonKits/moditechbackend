@@ -7,8 +7,6 @@ import com.moditech.ecommerce.model.Product;
 import com.moditech.ecommerce.model.ProductVariations;
 import com.moditech.ecommerce.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -17,7 +15,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
@@ -59,7 +56,8 @@ public class ProductService {
         );
 
         // Execute the aggregation query
-        AggregationResults<TopSoldProductDto> results = mongoTemplate.aggregate(aggregation, "product", TopSoldProductDto.class);
+        AggregationResults<TopSoldProductDto> results = mongoTemplate.aggregate(aggregation, "product",
+                TopSoldProductDto.class);
         // Get the result list
         return results.getMappedResults();
     }
@@ -83,7 +81,8 @@ public class ProductService {
         );
 
         // Execute the aggregation query
-        AggregationResults<TopSoldProductDto> results = mongoTemplate.aggregate(aggregation, "product", TopSoldProductDto.class);
+        AggregationResults<TopSoldProductDto> results = mongoTemplate.aggregate(aggregation, "product",
+                TopSoldProductDto.class);
         // Get the result list
         return results.getMappedResults();
     }
@@ -106,11 +105,11 @@ public class ProductService {
         );
 
         // Execute the aggregation query
-        AggregationResults<TopSoldProductDto> results = mongoTemplate.aggregate(aggregation, "product", TopSoldProductDto.class);
+        AggregationResults<TopSoldProductDto> results = mongoTemplate.aggregate(aggregation, "product",
+                TopSoldProductDto.class);
 
         return results.getMappedResults();
     }
-
 
     public Product getProductById(String id) {
         return productRepository.findById(id).orElse(null);
@@ -170,16 +169,15 @@ public class ProductService {
                         .first("isAd").as("isAd")
                         .addToSet("productVariationsList").as("productVariationsList")
                         .sum("productVariationsList.sold").as("totalSold"), // Sum the sold quantities
-                Aggregation.match(where("totalSold").is(0))
-        );
+                Aggregation.match(where("totalSold").is(0)));
 
-// Execute the aggregation query
-        AggregationResults<TopSoldProductDto> results = mongoTemplate.aggregate(aggregation, "product", TopSoldProductDto.class);
+        // Execute the aggregation query
+        AggregationResults<TopSoldProductDto> results = mongoTemplate.aggregate(aggregation, "product",
+                TopSoldProductDto.class);
 
         return results.getMappedResults();
 
     }
-
 
     public List<Product> getProductsWithinLastMonth() {
         long monthlyTimestamp = 30;
@@ -201,7 +199,8 @@ public class ProductService {
         }
     }
 
-    public void updateProductVariation(String productId, String oldVariationName, ProductVariationsDto updatedVariation) {
+    public void updateProductVariation(String productId, String oldVariationName,
+            ProductVariationsDto updatedVariation) {
         Product product = productRepository.findById(productId).orElse(null);
 
         if (product != null) {
@@ -209,7 +208,8 @@ public class ProductService {
 
             for (ProductVariations variation : variationsList) {
                 if (variation.getVariationName().equals(oldVariationName.trim())) {
-                    // Update the fields of the existing variation with the values from the updatedVariation
+                    // Update the fields of the existing variation with the values from the
+                    // updatedVariation
                     variation.setVariationName(updatedVariation.getVariationName()); // Update the name
                     variation.setImgUrl(updatedVariation.getImgUrl());
                     variation.setDescription(updatedVariation.getDescription());

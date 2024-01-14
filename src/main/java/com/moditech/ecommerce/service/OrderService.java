@@ -3,7 +3,6 @@ package com.moditech.ecommerce.service;
 import com.moditech.ecommerce.dto.OrderCountDto;
 import com.moditech.ecommerce.dto.OrderDto;
 import com.moditech.ecommerce.dto.ProductQuantityDto;
-import com.moditech.ecommerce.dto.ProductVariationsDto;
 import com.moditech.ecommerce.model.Order;
 import com.moditech.ecommerce.model.Product;
 import com.moditech.ecommerce.model.ProductVariations;
@@ -40,7 +39,6 @@ public class OrderService {
     public List<Order> getAllOrder() {
         return orderRepository.findAll();
     }
-
 
     public void createOrder(OrderDto orderDto) {
         Order order = new Order();
@@ -135,21 +133,20 @@ public class OrderService {
     }
 
     public double getTotalPriceByStatus() {
-//        String status = "Delivered";
-//        List<Order> orders = orderRepository.findByStatus(status);
+        // String status = "Delivered";
+        // List<Order> orders = orderRepository.findByStatus(status);
         List<Order> orders = orderRepository.findAll();
         return orders.stream().mapToDouble(Order::getTotalPrice).sum();
     }
 
     public List<Map<String, Object>> getTotalSalesPerMonth() {
-//        List<Order> deliveredOrders = orderRepository.findByStatus("Delivered");
+        // List<Order> deliveredOrders = orderRepository.findByStatus("Delivered");
         List<Order> allOrders = orderRepository.findAll();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MMM");
         return allOrders.stream()
                 .collect(Collectors.groupingBy(
                         order -> order.getOrderDate().format(formatter),
-                        Collectors.summingDouble(Order::getTotalPrice)
-                ))
+                        Collectors.summingDouble(Order::getTotalPrice)))
                 .entrySet().stream()
                 .map(entry -> {
                     Map<String, Object> result = new HashMap<>();
@@ -164,8 +161,7 @@ public class OrderService {
         Aggregation aggregation = Aggregation.newAggregation(
                 Aggregation.group("email").count().as("orderCount").first("email").as("email"),
                 Aggregation.sort(Sort.by(Sort.Order.desc("orderCount"))),
-                Aggregation.limit(5)
-        );
+                Aggregation.limit(5));
 
         AggregationResults<OrderCountDto> result = mongoTemplate.aggregate(aggregation, "order", OrderCountDto.class);
         return result.getMappedResults();

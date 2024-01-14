@@ -1,7 +1,5 @@
 package com.moditech.ecommerce.controller;
 
-import com.moditech.ecommerce.dto.ProductDto;
-import com.moditech.ecommerce.model.Order;
 import com.moditech.ecommerce.model.Reservation;
 import com.moditech.ecommerce.service.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,6 @@ import java.util.List;
 @RequestMapping("/api/reservation")
 @CrossOrigin("*")
 public class ReservationController {
-
 
     @Autowired
     ReservationService reservationService;
@@ -32,7 +29,8 @@ public class ReservationController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Reservation> updateReservation(@PathVariable String id, @RequestBody Reservation reservation){
+    public ResponseEntity<Reservation> updateReservation(@PathVariable String id,
+            @RequestBody Reservation reservation) {
         Reservation updateReservation = reservationService.updateReservationStatus(id, reservation);
         return ResponseEntity.ok(updateReservation);
     }

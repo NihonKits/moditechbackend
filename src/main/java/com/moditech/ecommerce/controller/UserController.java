@@ -1,6 +1,5 @@
 package com.moditech.ecommerce.controller;
 
-
 import com.moditech.ecommerce.dto.LoginDto;
 import com.moditech.ecommerce.model.User;
 import com.moditech.ecommerce.service.UserService;
@@ -23,7 +22,6 @@ public class UserController {
 
     @Value("${frontend.base.url}")
     String frontEndBaseUrl;
-
 
     @PostMapping("/register")
     public User registerUser(@RequestBody User user) {
@@ -53,7 +51,7 @@ public class UserController {
 
     @GetMapping("/isEnable/userID/{email}")
     private void updateIsEnableUser(@PathVariable String email, HttpServletResponse response) throws IOException {
-        User user = userService.updateIsEnableUser(email);
+        userService.updateIsEnableUser(email);
         response.sendRedirect(frontEndBaseUrl);
     }
 
