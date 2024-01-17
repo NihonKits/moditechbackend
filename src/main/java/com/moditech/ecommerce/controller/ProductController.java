@@ -27,8 +27,13 @@ public class ProductController {
         return ResponseEntity.ok(product);
     }
 
+    // @GetMapping("/list")
+    // private List<TopSoldProductDto> getAllProducts() {
+    // return productService.getAllProducts();
+    // }
+
     @GetMapping("/list")
-    private List<TopSoldProductDto> getAllProducts() {
+    private List<Product> getAllProducts() {
         return productService.getAllProducts();
     }
 

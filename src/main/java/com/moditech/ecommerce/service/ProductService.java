@@ -32,34 +32,38 @@ public class ProductService {
         Product product = new Product();
         product.setBarcode(productDto.getBarcode());
         product.setProductName(productDto.getProductName());
-        product.setProductImage(productDto.getProductImage());
         product.setDescription(productDto.getDescription());
-        product.setProductVariationsList(productDto.getProductVariationsList());
         return productRepository.save(product);
     }
 
-    public List<TopSoldProductDto> getAllProducts() {
-        // Create a custom query to sum the sold quantities for each product
-        Aggregation aggregation = Aggregation.newAggregation(
-                Aggregation.unwind("productVariationsList"), // Unwind the variations array
-                Aggregation.group("_id")
-                        .first("id").as("id")
-                        .first("barcode").as("barcode")
-                        .first("productName").as("productName")
-                        .first("productImage").as("productImage")
-                        .first("description").as("description")
-                        .first("isAd").as("isAd")
-                        .addToSet("productVariationsList").as("productVariationsList")
-                        .sum("productVariationsList.sold").as("totalSold"), // Sum the sold quantities
-                Aggregation.match(where("totalSold").gt(0)), // Exclude documents with totalSold of 0
-                Aggregation.sort(Sort.Direction.DESC, "totalSold") // Sort by total sold in descending order
-        );
+    // public List<TopSoldProductDto> getAllProducts() {
+    // // Create a custom query to sum the sold quantities for each product
+    // Aggregation aggregation = Aggregation.newAggregation(
+    // Aggregation.unwind("productVariationsList"), // Unwind the variations array
+    // Aggregation.group("_id")
+    // .first("id").as("id")
+    // .first("barcode").as("barcode")
+    // .first("productName").as("productName")
+    // .first("productImage").as("productImage")
+    // .first("description").as("description")
+    // .first("isAd").as("isAd")
+    // .addToSet("productVariationsList").as("productVariationsList")
+    // .sum("productVariationsList.sold").as("totalSold"), // Sum the sold
+    // quantities
+    // Aggregation.sort(Sort.Direction.DESC, "totalSold") // Sort by total sold in
+    // descending order
+    // );
 
-        // Execute the aggregation query
-        AggregationResults<TopSoldProductDto> results = mongoTemplate.aggregate(aggregation, "product",
-                TopSoldProductDto.class);
-        // Get the result list
-        return results.getMappedResults();
+    // // Execute the aggregation query
+    // AggregationResults<TopSoldProductDto> results =
+    // mongoTemplate.aggregate(aggregation, "product",
+    // TopSoldProductDto.class);
+    // // Get the result list
+    // return results.getMappedResults();
+    // }
+
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
     }
 
     public List<TopSoldProductDto> getTopSoldProducts() {
