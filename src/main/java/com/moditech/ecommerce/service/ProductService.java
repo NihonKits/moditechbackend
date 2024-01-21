@@ -33,6 +33,7 @@ public class ProductService {
         product.setBarcode(productDto.getBarcode());
         product.setProductName(productDto.getProductName());
         product.setDescription(productDto.getDescription());
+        product.setProductImage(productDto.getProductImage());
         return productRepository.save(product);
     }
 

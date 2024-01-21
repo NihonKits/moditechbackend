@@ -49,6 +49,8 @@ public class OrderService {
         order.setOrderList(orderDto.getOrderList());
         order.setPaymentMethod(orderDto.getPaymentMethod());
         order.setOrderDate(orderDto.getOrderDate());
+        order.setAddress(orderDto.getAddress());
+        order.setContactNumber(orderDto.getContactNumber());
 
         List<ProductQuantityDto> productQuantities = orderDto.getProducts();
         subtractProductsFromInventory(productQuantities);

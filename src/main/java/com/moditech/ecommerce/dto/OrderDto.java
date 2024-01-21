@@ -1,6 +1,5 @@
 package com.moditech.ecommerce.dto;
 
-
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 
@@ -26,6 +25,10 @@ public class OrderDto {
     private List<ProductQuantityDto> products;
 
     private String paymentMethod;
+
+    private String address;
+
+    private String contactNumber;
 
     private LocalDateTime orderDate;
 }
