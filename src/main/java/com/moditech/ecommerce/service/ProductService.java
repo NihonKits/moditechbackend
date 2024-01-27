@@ -163,8 +163,7 @@ public class ProductService {
 
     public List<TopSoldProductDto> getProductsByIsAd() {
         Aggregation aggregation = Aggregation.newAggregation(
-                Aggregation.match(Criteria.where("isAd").is(true)), // Match documents with isAd=true
-                Aggregation.unwind("productVariationsList"), // Unwind the variations array
+                Aggregation.match(Criteria.where("isAd").is("true")), // Match documents with isAd=true
                 Aggregation.group("_id")
                         .first("id").as("id")
                         .first("barcode").as("barcode")
@@ -172,7 +171,7 @@ public class ProductService {
                         .first("productImage").as("productImage")
                         .first("description").as("description")
                         .first("isAd").as("isAd")
-                        .addToSet("productVariationsList").as("productVariationsList")
+                        .first("productVariationsList").as("productVariationsList")
                         .sum("productVariationsList.sold").as("totalSold"), // Sum the sold quantities
                 Aggregation.match(where("totalSold").is(0)));
 
@@ -181,7 +180,6 @@ public class ProductService {
                 TopSoldProductDto.class);
 
         return results.getMappedResults();
-
     }
 
     public List<Product> getProductsWithinLastMonth() {
