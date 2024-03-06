@@ -1,18 +1,109 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Email Template</title>
-</head>
-<body>
-<h1>Top Sold Products</h1>
-<ul th:each="product : ${products}">
-    <li>
-        <img th:src="${product.productImage}" alt="Product Image"/>
-        <p th:text="${product.productName}"></p>
-        <p th:text="${product.description}"></p>
-    </li>
-</ul>
-</body>
+    <style>
+      body {
+        background-color: #f3f3f3;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      li {
+        background-color: #ffffff;
+        padding: 15px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      img {
+        width: auto;
+        height: 100px;
+      }
+
+      .social-icons {
+        margin-top: 20px;
+      }
+
+      .social-icons a {
+        display: inline-block;
+        margin-right: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      style="
+        display: flex;
+        align-items: center;
+        justify-items: center;
+        gap: 10px;
+      "
+    >
+      <img
+        src="https://res.cloudinary.com/alialcantara/image/upload/v1709767680/logo.png"
+        alt="logo"
+        style="height: 50px; width: auto"
+      />
+      <h1 style="margin: 0; padding: 0">ModiTech</h1>
+    </div>
+
+    <h1>Top Sold Products!</h1>
+    <ul th:each="topSoldProducts : ${topSoldProducts}">
+      <li>
+        <img th:src="${topSoldProducts.productImage}" alt="Product Image" />
+        <div>
+          <p th:text="${topSoldProducts.productName}"></p>
+          <p th:text="${topSoldProducts.description}"></p>
+        </div>
+      </li>
+    </ul>
+
+    <hr />
+
+    <h1>Our products on sale!!</h1>
+    <ul th:each="productsThatIsAd : ${productsThatIsAd}">
+      <li>
+        <img th:src="${productsThatIsAd.productImage}" alt="Product Image" />
+        <div>
+          <p th:text="${productsThatIsAd.productName}"></p>
+          <p th:text="${productsThatIsAd.description}"></p>
+        </div>
+      </li>
+    </ul>
+
+    <hr />
+    <div class="social-icons">
+      <a href="https://www.facebook.com/ModiTechHUB" target="_blank">
+        <img
+          src="https://www.freepnglogos.com/uploads/facebook-logo-icon/facebook-logo-icon-file-facebook-icon-svg-wikimedia-commons-4.png"
+          alt="Facebook"
+          style="height: 50px; width: auto"
+        />
+      </a>
+      <a href="https://www.tiktok.com/@moditechhub" target="_blank">
+        <img
+          src="https://www.freepnglogos.com/uploads/tik-tok-logo-png/tik-tok-how-use-tiktok-create-cool-videos-with-iphone-14.png"
+          alt="TikTok"
+          style="height: 50px; width: auto"
+        />
+      </a>
+    </div>
+    <hr />
+    <div>
+      <p>
+        Corner, 275 3rd St, East Grace Park, Caloocan, 1403 Metro Manila,
+        Caloocan, Philippines
+      </p>
+      <p>Contact Number: 09914605757</p>
+    </div>
+  </body>
 </html>
