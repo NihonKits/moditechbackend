@@ -19,7 +19,7 @@ public class UserService {
     public User registerUser(User user) {
         User userByEmail = userRepository.findByEmail(user.getEmail());
 
-        if(userByEmail != null){
+        if (userByEmail != null) {
             log.warn("Username is already existing");
             return null;
         }
@@ -65,5 +65,47 @@ public class UserService {
             userRepository.save(user);
         }
         return user;
+    }
+
+    public User updateUser(String email, User user) {
+        User newUser = userRepository.findByEmail(email);
+
+        if (!user.getImageUrl().equals("") && user.getImageUrl() != null) {
+            newUser.setImageUrl(user.getImageUrl());
+        }
+
+        if (!user.getFirstName().equals("") && user.getFirstName() != null) {
+            newUser.setFirstName(user.getFirstName());
+        }
+
+        if (!user.getLastName().equals("") && user.getLastName() != null) {
+            newUser.setLastName(user.getLastName());
+        }
+
+        if (!user.getContactNumber().equals("") && user.getContactNumber() != null) {
+            newUser.setContactNumber(user.getContactNumber());
+        }
+
+        if (!user.getAddressLine1().equals("") && user.getAddressLine1() != null) {
+            newUser.setAddressLine1(user.getAddressLine1());
+        }
+
+        if (!user.getAddressLine1().equals("") && user.getAddressLine1() != null) {
+            newUser.setAddressLine1(user.getAddressLine1());
+        }
+
+        if (!user.getCity().equals("") && user.getCity() != null) {
+            newUser.setCity(user.getCity());
+        }
+
+        if (!user.getCountry().equals("") && user.getCountry() != null) {
+            newUser.setCountry(user.getCountry());
+        }
+
+        if (!user.getPostalCode().equals("") && user.getPostalCode() != null) {
+            newUser.setPostalCode(user.getPostalCode());
+        }
+
+        return userRepository.save(newUser);
     }
 }

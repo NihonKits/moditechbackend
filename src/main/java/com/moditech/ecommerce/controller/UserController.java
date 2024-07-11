@@ -55,4 +55,10 @@ public class UserController {
         response.sendRedirect(frontEndBaseUrl);
     }
 
+    @PutMapping("/update/{email}")
+    private User updateUser(@PathVariable String email, @RequestBody User user) throws IOException {
+        System.out.println(email);
+        return userService.updateUser(email, user);
+    }
+
 }

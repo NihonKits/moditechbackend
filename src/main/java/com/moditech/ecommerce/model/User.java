@@ -26,4 +26,16 @@ public class User {
     private String birthday;
 
     private Boolean isEnable = false;
+
+    private String imageUrl;
+
+    private String addressLine1;
+
+    private String city;
+
+    private String country;
+
+    private String postalCode;
+
+    private String contactNumber;
 }
