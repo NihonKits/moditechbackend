@@ -1,9 +1,13 @@
 package com.moditech.ecommerce.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moditech.ecommerce.dto.OrderCountDto;
-import com.moditech.ecommerce.dto.TopSoldProductDto;
-import com.moditech.ecommerce.model.Product;
-import com.mongodb.lang.NonNull;
+import com.moditech.ecommerce.dto.OrderDetailsDto;
+import com.moditech.ecommerce.dto.ProductDto;
+import com.moditech.ecommerce.model.Order;
+import com.moditech.ecommerce.model.ProductVariations;
+import com.moditech.ecommerce.repository.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +22,10 @@ import org.thymeleaf.context.Context;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +42,9 @@ public class EmailService {
 
     @Autowired
     ProductService productService;
+
+    @Autowired
+    OrderRepository orderRepository;
 
     @Value("${spring.mail.username}")
     String adminEmail;
@@ -58,14 +69,33 @@ public class EmailService {
     public void sendCombinedEmail() {
         List<OrderCountDto> top5Customers = orderService.getTop5Customers();
         List<String> userEmails = top5Customers.stream().map(OrderCountDto::getEmail).collect(Collectors.toList());
-        List<TopSoldProductDto> topSoldProducts = productService.getTopSoldProducts();
-        List<TopSoldProductDto> productsWithinLastMonth = productService.getProductsByIsAd();
 
-        String subject = "New Products";
-        String htmlContent = generateCombinedProductsHtml(topSoldProducts, productsWithinLastMonth);
+        String subject = "Your Recent Orders";
+        ObjectMapper objectMapper = new ObjectMapper();
 
         for (String userEmail : userEmails) {
             try {
+                // Fetch orders for each customer
+                List<Order> customerOrders = orderRepository.findByEmail(userEmail);
+
+                // Parse orders into ProductDto objects
+                List<ProductDto> customerProducts = new ArrayList<>();
+                for (Order order : customerOrders) {
+                    List<OrderDetailsDto> orderDetails = objectMapper.readValue(order.getOrderList(),
+                            new TypeReference<List<OrderDetailsDto>>() {
+                            });
+                    for (OrderDetailsDto detail : orderDetails) {
+                        ProductDto productDto = detail.getProduct();
+                        ProductVariations selectedVariation = productDto.getProductVariationsList()
+                                .get(detail.getVariationIndex());
+                        productDto.setProductVariationsList(Collections.singletonList(selectedVariation));
+                        customerProducts.add(productDto);
+                    }
+                }
+
+                // Generate HTML content with customer products
+                String htmlContent = generateOrderEmailHtml(customerProducts);
+
                 MimeMessage mimeMessage = javaMailSender.createMimeMessage();
                 MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
@@ -75,17 +105,15 @@ public class EmailService {
                 helper.setFrom(adminEmail);
 
                 javaMailSender.send(mimeMessage);
-            } catch (MessagingException e) {
+            } catch (MessagingException | IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private String generateCombinedProductsHtml(List<TopSoldProductDto> topSoldProducts,
-            List<TopSoldProductDto> productsThatIsAd) {
+    private String generateOrderEmailHtml(List<ProductDto> customerProducts) {
         Context context = new Context();
-        context.setVariable("topSoldProducts", topSoldProducts);
-        context.setVariable("productsThatIsAd", productsThatIsAd);
+        context.setVariable("customerProducts", customerProducts); // Add customer products to the context
         return templateEngine.process("email-template", context);
     }
 }

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Email Template</title>
+    <title>You might like this products!</title>
     <style>
       body {
         background-color: #f3f3f3;
@@ -56,31 +56,39 @@
       <h1 style="margin: 0; padding: 0">ModiTech</h1>
     </div>
 
-    <h1>Top Sold Products!</h1>
-    <ul th:each="topSoldProducts : ${topSoldProducts}">
+    <h1>Your Recent Orders</h1>
+    <ul th:each="product : ${customerProducts}">
       <li>
-        <img th:src="${topSoldProducts.productImage}" alt="Product Image" />
+        <img th:src="${product.productImage}" alt="Product Image" />
         <div>
-          <p th:text="${topSoldProducts.productName}"></p>
-          <p th:text="${topSoldProducts.description}"></p>
+          <p>
+            <strong>Product Name:</strong>
+            <span th:text="${product.productName}"></span>
+          </p>
+          <p>
+            <strong>Description:</strong>
+            <span th:text="${product.description}"></span>
+          </p>
+          <p>
+            <strong>Variation:</strong>
+            <span
+              th:text="${product.productVariationsList[0].variationName}"
+            ></span>
+          </p>
+          <p>
+            <strong>Price:</strong>
+            <span th:text="${product.productVariationsList[0].price}"></span>
+          </p>
+          <p>
+            <strong>Quantity:</strong>
+            <span th:text="${product.productVariationsList[0].quantity}"></span>
+          </p>
         </div>
       </li>
     </ul>
 
     <hr />
 
-    <h1>Our products on sale!!</h1>
-    <ul th:each="productsThatIsAd : ${productsThatIsAd}">
-      <li>
-        <img th:src="${productsThatIsAd.productImage}" alt="Product Image" />
-        <div>
-          <p th:text="${productsThatIsAd.productName}"></p>
-          <p th:text="${productsThatIsAd.description}"></p>
-        </div>
-      </li>
-    </ul>
-
-    <hr />
     <div class="social-icons">
       <a href="https://www.facebook.com/ModiTechHUB" target="_blank">
         <img
