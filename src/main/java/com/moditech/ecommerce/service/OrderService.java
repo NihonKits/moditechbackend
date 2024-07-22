@@ -6,8 +6,11 @@ import com.moditech.ecommerce.dto.ProductQuantityDto;
 import com.moditech.ecommerce.model.Order;
 import com.moditech.ecommerce.model.Product;
 import com.moditech.ecommerce.model.ProductVariations;
+import com.moditech.ecommerce.model.User;
 import com.moditech.ecommerce.repository.OrderRepository;
 import com.moditech.ecommerce.repository.ProductRepository;
+import com.moditech.ecommerce.repository.UserRepository;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -34,6 +37,9 @@ public class OrderService {
     ProductRepository productRepository;
 
     @Autowired
+    UserRepository userRepository;
+
+    @Autowired
     private MongoTemplate mongoTemplate;
 
     public List<Order> getAllOrder() {
@@ -44,13 +50,26 @@ public class OrderService {
         Order order = new Order();
         order.setTotalPrice(orderDto.getTotalPrice());
         order.setStatus(orderDto.getStatus());
+
         order.setEmail(orderDto.getEmail());
+        User user = userRepository.findByEmail(orderDto.getEmail());
+
         order.setUserFullName(orderDto.getUserFullName());
         order.setOrderList(orderDto.getOrderList());
         order.setPaymentMethod(orderDto.getPaymentMethod());
         order.setOrderDate(orderDto.getOrderDate());
-        order.setAddress(orderDto.getAddress());
-        order.setContactNumber(orderDto.getContactNumber());
+
+        if (orderDto.getAddress() == null || orderDto.getAddress() == "") {
+            order.setAddress(user.getAddressLine1() + user.getCity() + user.getCountry() + user.getPostalCode());
+        } else {
+            order.setAddress(orderDto.getAddress());
+        }
+
+        if (orderDto.getContactNumber() == null || orderDto.getContactNumber() == "") {
+            order.setContactNumber(user.getContactNumber());
+        } else {
+            order.setContactNumber(orderDto.getContactNumber());
+        }
 
         List<ProductQuantityDto> productQuantities = orderDto.getProducts();
         subtractProductsFromInventory(productQuantities);
