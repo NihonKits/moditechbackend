@@ -70,7 +70,7 @@ public class UserService {
     public User updateUser(String email, User user) {
         User newUser = userRepository.findByEmail(email);
 
-        if (!user.getImageUrl().equals("") || user.getImageUrl() != null) {
+        if (user != null && user.getImageUrl() != null && !user.getImageUrl().isEmpty()) {
             newUser.setImageUrl(user.getImageUrl());
         }
 
